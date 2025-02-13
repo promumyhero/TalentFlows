@@ -21,9 +21,49 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  userType       UserType?
+  onBoardingComplete Boolean @default(false)
  
+  Company        Company?
+  JobSeeker      JobSeeker?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum UserType {
+  company
+  jobSeeker
+}
+
+model Company {
+  id            String          @id @default(cuid())
+  name          String
+  location      String
+  about         String
+  logo          String
+  website       String
+  xAccount      String?
+  
+  user          User @relation(fields: [userId], references: [id])
+  userId        String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JobSeeker {
+  id            String          @id @default(cuid())
+
+  name          String
+  about         String
+  resume        String
+
+  user          User @relation(fields: [userId], references: [id])
+  userId        String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
 }
  
 model Account {
