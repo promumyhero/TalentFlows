@@ -2,18 +2,18 @@
 
 import { z } from "zod";
 import { requireUser } from "./utils/requireUser";
-import { companySchema } from "./utils/zodSchemas";
+import { companySchema, jobSeekerSchema } from "./utils/zodSchemas";
 import { prisma } from "./utils/db";
 import { redirect } from "next/navigation";
 
 export async function createCompany(data: z.infer<typeof companySchema>) {
-  const session = await requireUser();
+  const user = await requireUser();
 
   const validatedData = companySchema.parse(data);
 
   await prisma.user.update({
     where: {
-      id: session?.id,
+      id: user?.id,
     },
     data: {
       onBoardingComplete: true,
@@ -25,5 +25,28 @@ export async function createCompany(data: z.infer<typeof companySchema>) {
       },
     },
   });
+  return redirect("/");
+}
+
+export async function createJobSeeker(data: z.infer<typeof jobSeekerSchema>) {
+  const user = await requireUser();
+
+  const validatedData = jobSeekerSchema.parse(data);
+
+  await prisma.user.update({
+    where: {
+      id: user?.id as string,
+    },
+    data: {
+      onBoardingComplete: true,
+      userType: "jobSeeker",
+      JobSeeker: {
+        create: {
+          ...validatedData,
+        },
+      },
+    },
+  });
+
   return redirect("/");
 }
