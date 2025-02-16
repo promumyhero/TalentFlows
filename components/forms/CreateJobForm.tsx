@@ -140,9 +140,19 @@ export function CreateJobForm() {
               <FormItem>
                 <FormLabel>Salary Range</FormLabel>
                 <FormControl>
-                  <SalaryRangeSelector />
+                  <SalaryRangeSelector
+                    control={form.control}
+                    minSalary={1000000}
+                    maxSalary={75000000}
+                    step={100000}
+                    currency="IDR"
+                  />
                 </FormControl>
               </FormItem>
+              {/**
+               * Menampilkan gaji minimum yang diinput oleh user
+               * // TODO: Nanti ganti jadi number atau bisa ditambahkan validasi
+               */}
             </div>
           </CardContent>
         </Card>
