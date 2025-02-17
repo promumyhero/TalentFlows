@@ -111,7 +111,7 @@ export function JobSeekerForm() {
                     <UploadDropzone
                       endpoint="resumeUploader"
                       onClientUploadComplete={(res) => {
-                        field.onChange(res[0].url);
+                        field.onChange(res[0].ufsUrl);
                       }}
                       onUploadError={() => {}}
                       className="ut-button:bg-primary ut-button:text-white ut-button:hover:bg-primary/90 ut-label:text-muted-foreground ut-allowed-content:text-muted-foreground border-primary"

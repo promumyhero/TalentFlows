@@ -22,7 +22,7 @@ export function JobDescriptionEditor({ field }: EditorProps) {
     editorProps: {
       attributes: {
         class:
-          "min-h-[300px] p-4 max-w-none focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-2xl dark:prose-invert",
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none min-h-[300px] p-4 max-w-none dark:prose-invert",
       },
     },
     onUpdate: ({ editor }) => {
