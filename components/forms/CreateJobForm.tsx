@@ -31,20 +31,35 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { XIcon } from "lucide-react";
 import { UploadDropzone } from "../general/UploadThing";
-import { toast } from "@/hooks/use-toast";
 import { JobListingDuration } from "../general/JobListingDuration";
 
-export function CreateJobForm() {
+interface CreateJobFormProps {
+  companyAbout: string;
+  companyLocation: string;
+  companyName: string;
+  companyLogo: string;
+  companyWebsite: string;
+  companyXAccount: string | null;
+}
+
+export function CreateJobForm({
+  companyAbout,
+  companyLocation,
+  companyName,
+  companyLogo,
+  companyWebsite,
+  companyXAccount,
+}: CreateJobFormProps) {
   const form = useForm<z.infer<typeof jobSchema>>({
     resolver: zodResolver(jobSchema),
     defaultValues: {
       benefits: [],
-      companyAbout: "",
-      companyLocation: "",
-      companyName: "",
-      companyLogo: "",
-      companyWebsite: "",
-      companyXAccount: "",
+      companyAbout: companyAbout,
+      companyLocation: companyLocation,
+      companyName: companyName,
+      companyLogo: companyLogo,
+      companyWebsite: companyWebsite,
+      companyXAccount: companyXAccount || "",
       employementType: "",
       jobDescription: "",
       jobTitle: "",
@@ -54,9 +69,15 @@ export function CreateJobForm() {
       salaryTo: 0, // nanti ganti jadi number
     },
   });
+
+  async function onSubmit(values: z.infer<typeof jobSchema>) {}
+
   return (
     <Form {...form}>
-      <form className="col-span-2 lg:col-span-2 flex flex-col gap-4" action="">
+      <form
+        className="col-span-2 lg:col-span-2 flex flex-col gap-4"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Job Details</CardTitle>
@@ -202,6 +223,7 @@ export function CreateJobForm() {
                     <FormControl>
                       <Input placeholder="Company Name" {...field} />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -365,6 +387,9 @@ export function CreateJobForm() {
             />
           </CardContent>
         </Card>
+        <Button className="w-full" type="submit">
+          Post Job
+        </Button>
       </form>
     </Form>
   );
