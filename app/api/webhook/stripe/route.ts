@@ -3,6 +3,14 @@ import { stripe } from "@/app/utils/stripe";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 
+/**
+ * Handle Stripe webhook event. This function is called by Stripe
+ * to notify us of events related to payment such as payment success
+ * or payment failure.
+ *
+ * @param {Request} req - The request object
+ * @returns {Response} - The response object
+ */
 export async function POST(req: Request) {
   const body = await req.text();
 
@@ -51,7 +59,7 @@ export async function POST(req: Request) {
 
     await prisma.postJob.update({
       where: {
-        id: "",
+        id: jobId,
         companyId: company?.Company?.id as string,
       },
       data: {
@@ -59,4 +67,6 @@ export async function POST(req: Request) {
       },
     });
   }
+
+  return new Response(null, { status: 200 });
 }
