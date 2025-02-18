@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import arcjet, { detectBot, shield } from "./utils/arcjet";
 import { request } from "@arcjet/next";
 import { stripe } from "./utils/stripe";
+import { jobListingDurationPricing } from "./utils/jobListingDurationPricing";
 
 const aj = arcjet
   .withRule(
@@ -159,7 +160,36 @@ export async function createJob(data: z.infer<typeof jobSchema>) {
     },
   });
 
-  
+  const pricingTier = jobListingDurationPricing.find(
+    (tier) => tier.days === validatedData.listingDuration
+  );
 
-  return redirect("/");
+  if (!pricingTier) {
+    throw new Error("Invalid listing duration");
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    customer: stripeCustomerId,
+    line_items: [
+      {
+        price_data: {
+          product_data: {
+            name: `Job Posting - ${pricingTier.days} Days`,
+            description: pricingTier.description,
+            images: [
+              "https://lrtfo6geun.ufs.sh/f/SWGYUyKAeJKZ8uyROmC8Pu4O2wVvFG1jSR3LYpMUohqdgIym",
+            ],
+          },
+          currency: "IDR",
+          unit_amount: pricingTier.price * 100, //TODO : nanti ini bisa diubah dan menyesuaikan apakah benar implementasi untuk idr begini
+        },
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${process.env.NEXT_PUBLIC_URL}/payment/success`,
+    cancel_url: `${process.env.NEXT_PUBLIC_URL}/payment/cancel`,
+  });
+
+  return redirect(session.url as string);
 }
