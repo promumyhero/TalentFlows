@@ -189,11 +189,10 @@ export async function createJob(data: z.infer<typeof jobSchema>) {
         quantity: 1,
       },
     ],
-
+    mode: "payment",
     metadata: {
       jobId: postJob.id,
     },
-    mode: "payment",
     success_url: `${process.env.NEXT_PUBLIC_URL}/payment/success`,
     cancel_url: `${process.env.NEXT_PUBLIC_URL}/payment/cancel`,
   });

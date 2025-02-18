@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     const jobId = session.metadata?.jobId as string;
 
     if (!jobId) {
+      console.log("No job ID found in metadata");
       return new Response("Invalid job ID", { status: 400 });
     }
 
