@@ -32,6 +32,8 @@ import { Button } from "../ui/button";
 import { XIcon } from "lucide-react";
 import { UploadDropzone } from "../general/UploadThing";
 import { JobListingDuration } from "../general/JobListingDuration";
+import { createJob } from "@/app/action";
+import { useState } from "react";
 
 interface CreateJobFormProps {
   companyAbout: string;
@@ -70,7 +72,19 @@ export function CreateJobForm({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof jobSchema>) {}
+  const [pending, setPending] = useState(false);
+  async function onSubmit(values: z.infer<typeof jobSchema>) {
+    try {
+      setPending(true);
+      await createJob(values);
+    } catch (error) {
+      if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+        console.error("Something went wrong:", error.message);
+      }
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <Form {...form}>
@@ -387,8 +401,8 @@ export function CreateJobForm({
             />
           </CardContent>
         </Card>
-        <Button className="w-full" type="submit">
-          Post Job
+        <Button className="w-full" type="submit" disabled={pending}>
+          {pending ? "Creating..." : "Create Job Post"}
         </Button>
       </form>
     </Form>

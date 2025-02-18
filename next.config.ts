@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         port: "",
         protocol: "https",
       },
+      {
+        hostname: "lrtfo6geun.ufs.sh",
+        port: "",
+        protocol: "https",
+      },
     ],
   },
 };

@@ -21,6 +21,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  stripeCustomerId String? @unique
 
   userType       UserType?
   onBoardingComplete Boolean @default(false)
