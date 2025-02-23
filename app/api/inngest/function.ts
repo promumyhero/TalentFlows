@@ -1,6 +1,10 @@
 import { prisma } from "@/app/utils/db";
 import { inngest } from "@/app/utils/inngest/client";
 
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/hello.world" },
@@ -27,5 +31,70 @@ export const handleJobExpired = inngest.createFunction(
       });
     });
     return { jobId, message: "Job has been expired" };
+  }
+);
+
+export const sendPeriodicJobNotification = inngest.createFunction(
+  { id: "send-periodic-job-notification" },
+  { event: "jobseeker/created" },
+  async ({ event, step }) => {
+    const { userId } = event.data;
+    const totalDays = 30;
+    const intervalDays = 2;
+    let currentDate = 0;
+    while (currentDate < totalDays) {
+      await step.sleep("wait-for-expiration", `${intervalDays}d`);
+      currentDate += intervalDays;
+
+      const recentJobs = await step.run("fetch-recent-jobs", async () => {
+        return await prisma.postJob.findMany({
+          where: {
+            status: "ACTIVE",
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 10,
+          include: {
+            Company: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+      });
+      if (recentJobs.length > 0) {
+        await step.run("send-email", async () => {
+          const jobListingHtml = recentJobs
+            .map(
+              (job) => `
+          <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;">
+            <h3 style="margin: 0;">${job.jobTitle}</h3>
+            <p style="margin: 5px 0;">${job.Company?.name} * ${job.location}</p>
+            <p style="margin: 5px 0;">Rp${job.salaryFrom.toLocaleString()} - Rp${job.salaryTo.toLocaleString()}</p>
+            </div>`
+            )
+            .join("");
+
+          await resend.emails.send({
+            from: "TalentFlow <onboarding@resend.dev>",
+            to: ["ridhoheryw@gmail.com"],
+            subject: "Latest Job Offers",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2>Latest Job Listings</h2>
+              ${jobListingHtml}
+              <div style="margin-top: 30px; text-align: center;">
+              <a href="${process.env.NEXT_PUBLIC_URL}" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">View More Jobs</a>
+              </div>
+              </div>
+            `,
+          });
+        });
+      }
+    }
+
+    return { userId, message: "Completed periodic job notification" };
   }
 );

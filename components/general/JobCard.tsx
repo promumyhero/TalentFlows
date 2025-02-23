@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Card, CardHeader } from "../ui/card";
-import { MapPlusIcon, User2Icon } from "lucide-react";
+import { MapPinCheck, MapPinCheckIcon } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { formatCurrency } from "@/app/utils/formatCurrency";
+import { formatRelativeTime } from "@/app/utils/formatRelativeTime";
 
 interface JobCardProps {
   job: {
@@ -25,8 +26,8 @@ interface JobCardProps {
 
 export function JobCard({ job }: JobCardProps) {
   return (
-    <Link href={`/job`}>
-      <Card>
+    <Link href={`/job/${job.id}`}>
+      <Card className="hover:shadow-lg transition-all duration-300 hover:border-primary relative">
         <CardHeader>
           <div className="flex flex-col md:flex-row gap-4">
             <Image
@@ -36,7 +37,7 @@ export function JobCard({ job }: JobCardProps) {
               height={48}
               className="size-12 rounded-lg"
             />
-            <div>
+            <div className="flex flex-col flex-grow">
               <h1 className="text-xl md:text-2xl font-bold">{job.jobTitle}</h1>
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-sm text-muted-foreground">
@@ -61,13 +62,22 @@ export function JobCard({ job }: JobCardProps) {
                 </p>
               </div>
             </div>
-            <div className="nd:ml-auto">
-              <div className="flex items-center gap-2">
-                <MapPlusIcon className="size-4" />
-                <h1>{job.location}</h1>
+            <div className="md:ml-auto text-right">
+              <div className="flex items-center gap-2 justify-end">
+                <MapPinCheck className="size-4" />
+                <h1 className="text-base md:text-lg font-semibold whitespace-nowrap">
+                  {job.location}
+                </h1>
               </div>
-              <p>{job.createdAt.toString()}</p>
+              <p className="text-sm text-muted-foreground md:text-right">
+                {formatRelativeTime(job.createdAt)}
+              </p>
             </div>
+          </div>
+          <div className="!mt-5">
+            <p className="text-base text-muted-foreground line-clamp-2">
+              {job.Company?.about}
+            </p>
           </div>
         </CardHeader>
       </Card>
