@@ -55,7 +55,7 @@ export function UserDropdown({ email, name, image }: UserDropdownProps) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/favorites">
+            <Link href="/saved-jobs">
               <Heart
                 size={16}
                 strokeWidth={2}
