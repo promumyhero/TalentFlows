@@ -15,7 +15,15 @@ export const helloWorld = inngest.createFunction(
 );
 
 export const handleJobExpired = inngest.createFunction(
-  { id: "handle-job-expired" },
+  {
+    id: "handle-job-expired",
+    cancelOn: [
+      {
+        event: "job/cancel.expiration",
+        if: "event.data.jobId == async.data.jobId",
+      },
+    ],
+  },
   { event: "job/created" },
   async ({ event, step }) => {
     const { jobId, expirationDays } = event.data;

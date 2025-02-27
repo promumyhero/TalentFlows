@@ -210,6 +210,12 @@ export async function createJob(data: z.infer<typeof jobSchema>) {
   return redirect(session.url as string);
 }
 
+
+/**
+ * Menyimpan job posting yang di-save oleh user
+ * @param {string} jobId id dari job posting yang akan di-save
+ * @throws {Error} apabila user tidak memiliki akses
+ */
 export async function savedJobPost(jobId: string) {
   const user = await requireUser();
   const req = await request();
@@ -227,6 +233,16 @@ export async function savedJobPost(jobId: string) {
   revalidatePath(`/job/${jobId}`);
 }
 
+
+/**
+ * Menghapus saved job post dari user yang sedang login.
+ *
+ * @param {string} savedJobPostId - ID dari saved job post yang ingin dihapus.
+ *
+ * @throws {Error} - Jika user tidak memiliki akses atau tidak login.
+ *
+ * @return {Promise<void>}
+ */
 export async function unSavedJobPost(savedJobPostId: string) {
   const user = await requireUser();
   const req = await request();
@@ -245,4 +261,74 @@ export async function unSavedJobPost(savedJobPostId: string) {
     },
   });
   revalidatePath(`/job/${data.jobPostId}`);
+}
+
+/**
+ * Edit a job post
+ * @param {z.infer<typeof jobSchema>} data data yang akan diinputkan
+ * @param {string} jobId id dari job post yang akan diedit
+ * @returns {Promise<void>}
+ * @throws {Error} apabila user tidak memiliki perusahaan yang sesuai atau data tidak valid
+ */
+export async function editJobPost(
+  data: z.infer<typeof jobSchema>,
+  jobId: string
+) {
+  const user = await requireUser();
+  const req = await request();
+  const decision = await aj.protect(req);
+  const validatedData = jobSchema.parse(data);
+
+  if (decision.isDenied()) {
+    throw new Error("Forbidden");
+  }
+  await prisma.postJob.update({
+    where: {
+      id: jobId,
+      Company: {
+        userId: user.id as string,
+      },
+    },
+    data: {
+      jobDescription: validatedData.jobDescription,
+      jobTitle: validatedData.jobTitle,
+      employementType: validatedData.employementType,
+      location: validatedData.location,
+      salaryFrom: validatedData.salaryFrom,
+      salaryTo: validatedData.salaryTo,
+      benefits: validatedData.benefits,
+    },
+  });
+  return redirect("/my-jobs");
+}
+
+
+/**
+ * Delete a job post
+ * @param {string} jobId id dari job post yang akan dihapus
+ * @returns {Promise<Response>} balikan response redirect ke halaman utama
+ * @throws {Error} apabila user tidak memiliki perusahaan yang sesuai atau request tidak valid
+ */
+export async function deleteJobPost(jobId: string) {
+  const session = await requireUser();
+  const req = await request();
+
+  const decision = await aj.protect(req);
+  if (decision.isDenied()) {
+    throw new Error("Forbidden");
+  }
+
+  await prisma.postJob.delete({
+    where: {
+      id: jobId,
+      Company: {
+        userId: session.id as string,
+      },
+    },
+  });
+  await inngest.send({
+    name: "job/cancel.expiration",
+    data: { jobId: jobId },
+  });
+  return redirect("/my-jobs");
 }
