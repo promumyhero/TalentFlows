@@ -1,5 +1,6 @@
 import { prisma } from "@/app/utils/db";
 import { requireUser } from "@/app/utils/requireUser";
+import { CopyLinkMenuItem } from "@/components/general/CopyLink";
 import { EmptyState } from "@/components/general/EmptyState";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,12 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  CopyCheckIcon,
-  MoreHorizontalIcon,
-  PenBoxIcon,
-  XCircleIcon,
-} from "lucide-react";
+import { MoreHorizontalIcon, PenBoxIcon, XCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -89,7 +85,7 @@ export default async function MyJobsPage() {
                   <TableHead>Job Title</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created At</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -117,7 +113,7 @@ export default async function MyJobsPage() {
                         year: "numeric",
                       })}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant={"ghost"} size={"icon"}>
@@ -132,12 +128,11 @@ export default async function MyJobsPage() {
                               Edit Job
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/my-jobs/${listing.id}/edit`}>
-                              <CopyCheckIcon />
-                              Copy Job URL
-                            </Link>
-                          </DropdownMenuItem>
+                          <CopyLinkMenuItem
+                            jobUrl={
+                              `${process.env.NEXT_PUBLIC_URL}/job/${listing.id}` as string
+                            }
+                          />
                           <DropdownMenuSeparator />
                           <DropdownMenuItem asChild>
                             <Link href={`/my-jobs/${listing.id}/delete`}>
