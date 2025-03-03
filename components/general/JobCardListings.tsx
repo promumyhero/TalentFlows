@@ -3,7 +3,7 @@ import { EmptyState } from "./EmptyState";
 import { JobCard } from "./JobCard";
 import { MainPagination } from "./MainPagination";
 
-async function getData(page: number = 1, pageSize: number = 2) {
+async function getData(page: number = 1, pageSize: number = 4) {
   const skip = (page - 1) * pageSize;
   const [data, totalCount] = await Promise.all([
     prisma.postJob.findMany({
