@@ -1,3 +1,4 @@
+"use client";
 import { XIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -14,15 +15,54 @@ import {
   SelectValue,
 } from "../ui/select";
 import { countryList } from "@/app/utils/countriesList";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
 const jobTypes = ["Full-Time", "Part-Time", "Contract", "Internship"];
 
 export function JobFilters() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  // get current filters from url
+  const currentJobType = searchParams.get("jobTypes")?.split(",") || [];
+  function clearAllFilters() {
+    router.push("/");
+  }
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  function handleJobTypeChange(jobTypes: string, checked: boolean) {
+    const current = new Set(currentJobType);
+    if (checked) {
+      current.add(jobTypes);
+    } else {
+      current.delete(jobTypes);
+    }
+    const newValue = Array.from(current).join(",");
+
+    router.push(`?${createQueryString("jobTypes", newValue)}`);
+  }
   return (
     <Card className="col-span-1 h-fit">
       <CardHeader className="flex flex-row justify-between items-center">
         <CardTitle className="text-2xl font-semibold">Filter</CardTitle>
-        <Button variant={"destructive"} size={"sm"} className="h-8">
+        <Button
+          onClick={clearAllFilters}
+          variant={"destructive"}
+          size={"sm"}
+          className="h-8"
+        >
           <span>Clear Filters</span>
           <XIcon className="size-4" />
         </Button>
@@ -34,7 +74,13 @@ export function JobFilters() {
           <div className="grid grid-cols-2 gap-4">
             {jobTypes.map((job, index) => (
               <div key={index} className="flex items-center space-x-2 gap-2">
-                <Checkbox id={job} />
+                <Checkbox
+                  onCheckedChange={(checked) => {
+                    handleJobTypeChange(job, checked as boolean);
+                  }}
+                  id={job}
+                  checked={currentJobType.includes(job)}
+                />
                 <Label className="text-sm font-medium" htmlFor={job}>
                   {job}
                 </Label>
