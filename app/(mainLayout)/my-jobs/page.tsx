@@ -94,7 +94,7 @@ export default async function MyJobsPage() {
                     <TableCell>
                       <Image
                         src={listing.Company?.logo || ""}
-                        alt="logo of company"
+                        alt={`${listing.Company?.name} logo`}
                         width={40}
                         height={40}
                         className="rounded-md size-10"
