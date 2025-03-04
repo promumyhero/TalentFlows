@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
 import { ControllerRenderProps } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { jobListingDurationPricing } from "@/app/utils/jobListingDurationPricing";
@@ -7,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { FormControl } from "../ui/form";
 
 interface JobListingDurationProps {
-  field: ControllerRenderProps;
+  field: ControllerRenderProps<any, "listingDuration">;
 }
 
 export function JobListingDuration({ field }: JobListingDurationProps) {

@@ -16,7 +16,7 @@ type Params = Promise<{ jobId: string }>;
 
 export default async function DeleteJobPage({ params }: { params: Params }) {
   const { jobId } = await params;
-  const session = await requireUser();
+  await requireUser();
   return (
     <div>
       <Card className="max-w-lg mx-auto mt-28">

@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
 import { benefits } from "@/app/utils/listOfBenefits";
 import { Badge } from "../ui/badge";
 import { ControllerRenderProps } from "react-hook-form";
 
 interface BenefitsSelectorProps {
-  field: ControllerRenderProps;
+  field: ControllerRenderProps<any, any>;
 }
 
 export function BenefitsSelector({ field }: BenefitsSelectorProps) {
@@ -38,7 +41,8 @@ export function BenefitsSelector({ field }: BenefitsSelectorProps) {
         })}
       </div>
       <div className="mt-4 text-sm text-muted-foreground">
-        Selected Benefits: <span className="text-primary">{(field.value || []).length}</span>
+        Selected Benefits:{" "}
+        <span className="text-primary">{(field.value || []).length}</span>
       </div>
     </div>
   );

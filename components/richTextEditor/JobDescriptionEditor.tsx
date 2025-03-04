@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { MenuBar } from "./MenuBar";
 import TextAlign from "@tiptap/extension-text-align";
 import Typography from "@tiptap/extension-typography";
-import { ControllerRenderProps } from "react-hook-form";
 
 interface EditorProps {
-  field: ControllerRenderProps;
+  field: any;
 }
 
 export function JobDescriptionEditor({ field }: EditorProps) {
