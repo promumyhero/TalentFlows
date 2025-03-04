@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { prisma } from "@/app/utils/db";
 import { requireUser } from "@/app/utils/requireUser";
 import { CreateJobForm } from "@/components/forms/CreateJobForm";
