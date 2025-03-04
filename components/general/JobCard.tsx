@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardHeader } from "../ui/card";
-import { MapPinCheck, MapPinCheckIcon } from "lucide-react";
+import { MapPinCheck } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
 import { formatCurrency } from "@/app/utils/formatCurrency";

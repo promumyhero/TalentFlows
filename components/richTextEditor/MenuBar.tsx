@@ -15,13 +15,10 @@ import {
   Heading3Icon,
   Italic,
   List,
-  ListIcon,
   ListOrdered,
-  ListOrderedIcon,
   Redo,
   Strikethrough,
   Undo,
-  Undo2Icon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
