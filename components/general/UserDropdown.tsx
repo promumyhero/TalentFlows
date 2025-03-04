@@ -1,8 +1,6 @@
 import {
   ChevronDown,
-  ChevronDownCircleIcon,
   Heart,
-  HeartHandshakeIcon,
   Layers2,
   LogOut,
 } from "lucide-react";

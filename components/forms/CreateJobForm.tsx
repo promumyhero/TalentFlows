@@ -189,7 +189,6 @@ export function CreateJobForm({
                     minSalary={1000000}
                     maxSalary={75000000}
                     step={100000}
-                    currency="IDR"
                   />
                 </FormControl>
               </FormItem>

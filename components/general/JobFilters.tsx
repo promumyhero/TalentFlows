@@ -23,8 +23,11 @@ const jobTypes = ["Full-Time", "Part-Time", "Contract", "Internship"];
 export function JobFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   // get current filters from url
-  const currentJobType = searchParams.get("jobTypes")?.split(",") || [];
+  const currentJobTypes = searchParams.get("jobTypes")?.split(",") || [];
+  const currentLocation = searchParams.get("location") || "";
+
   function clearAllFilters() {
     router.push("/");
   }
@@ -32,27 +35,34 @@ export function JobFilters() {
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
+
       if (value) {
         params.set(name, value);
       } else {
         params.delete(name);
       }
+
       return params.toString();
     },
     [searchParams]
   );
 
-  function handleJobTypeChange(jobTypes: string, checked: boolean) {
-    const current = new Set(currentJobType);
+  const handleJobTypeChange = (type: string, checked: boolean) => {
+    const current = new Set(currentJobTypes);
     if (checked) {
-      current.add(jobTypes);
+      current.add(type);
     } else {
-      current.delete(jobTypes);
+      current.delete(type);
     }
-    const newValue = Array.from(current).join(",");
 
+    const newValue = Array.from(current).join(",");
     router.push(`?${createQueryString("jobTypes", newValue)}`);
+  };
+
+  function handleLocationChange(location: string) {
+    router.push(`?${createQueryString("location", location)}`);
   }
+
   return (
     <Card className="col-span-1 h-fit">
       <CardHeader className="flex flex-row justify-between items-center">
@@ -79,7 +89,7 @@ export function JobFilters() {
                     handleJobTypeChange(job, checked as boolean);
                   }}
                   id={job}
-                  checked={currentJobType.includes(job)}
+                  checked={currentJobTypes.includes(job)}
                 />
                 <Label className="text-sm font-medium" htmlFor={job}>
                   {job}
@@ -93,7 +103,12 @@ export function JobFilters() {
 
         <div className="space-y-4">
           <Label className="text-lg font-semibold">Location</Label>
-          <Select>
+          <Select
+            onValueChange={(location) => {
+              handleLocationChange(location);
+            }}
+            value={currentLocation}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select a location" />
             </SelectTrigger>
