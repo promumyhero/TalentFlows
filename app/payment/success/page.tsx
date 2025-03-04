@@ -4,6 +4,12 @@ import { Card } from "@/components/ui/card";
 import { CheckCheckIcon } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Halaman ini akan di render ketika user melakukan pembayaran dengan sukses
+ * dan akan di redirect ke halaman ini
+ *
+ * @returns {JSX.Element}
+ */
 export default async function PaymentSuccess() {
   await requireUser();
   return (

@@ -11,6 +11,21 @@ type SearchParams = {
   }>;
 };
 
+
+/**
+ * Komponen halaman utama yang menampilkan daftar lowongan pekerjaan sesuai filter.
+ *
+ * Komponen ini menerima parameter `searchParams` yang berisi parameter query string
+ * berupa `page`, `jobTypes`, dan `location`. Parameter `page` berisi nomor halaman
+ * yang akan ditampilkan, parameter `jobTypes` berisi jenis pekerjaan yang akan
+ * ditampilkan, dan parameter `location` berisi lokasi pekerjaan yang akan ditampilkan.
+ *
+ * Komponen ini akan menampilkan daftar lowongan pekerjaan sesuai filter yang diberikan
+ * dan akan membuat unique key untuk komponen berdasarkan filter yang diberikan.
+ *
+ * @param {{ searchParams: { page?: string, jobTypes?: string, location?: string } }} props
+ * @returns {JSX.Element}
+ */
 export default async function Home({ searchParams }: SearchParams) {
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;

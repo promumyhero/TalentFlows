@@ -26,6 +26,12 @@ async function checkIfUserHasOnboarded(userId: string) {
   return user;
 }
 
+
+/**
+ * Halaman onboarding
+ * Jika pengguna belum selesai onboarding, maka akan ditampilkan form onboarding
+ * Jika pengguna sudah selesai onboarding, maka akan diarahkan ke halaman utama
+ */
 export default async function OnboardingPage() {
   const session = await requireUser();
   await checkIfUserHasOnboarded(session?.id as string);

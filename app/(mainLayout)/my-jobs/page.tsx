@@ -42,6 +42,13 @@ type JobListing = {
   } | null;
 };
 
+/**
+ * Mendapatkan daftar job yang pernah diposting oleh user.
+ *
+ * @param {string} userId - User ID yang akan diambil job-nya.
+ *
+ * @returns {Promise<JobListing[]>} - Daftar job yang pernah diposting oleh user.
+ */
 async function getMyJobs(userId: string) {
   const data = await prisma.postJob.findMany({
     where: {
