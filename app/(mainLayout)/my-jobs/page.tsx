@@ -30,6 +30,18 @@ import { MoreHorizontal, PenBoxIcon, User2, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+// Definisikan tipe untuk listing
+type JobListing = {
+  id: string;
+  jobTitle: string;
+  status: string;
+  createdAt: Date;
+  Company: {
+    name: string;
+    logo: string | null;
+  } | null;
+};
+
 async function getMyJobs(userId: string) {
   const data = await prisma.postJob.findMany({
     where: {
@@ -53,12 +65,14 @@ async function getMyJobs(userId: string) {
       createdAt: "desc",
     },
   });
+
   return data;
 }
 
 export default async function MyJobsPage() {
   const session = await requireUser();
   const data = await getMyJobs(session.id as string);
+
   return (
     <>
       {data.length === 0 ? (
@@ -89,7 +103,7 @@ export default async function MyJobsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((listing) => (
+                {data.map((listing: JobListing) => (
                   <TableRow key={listing.id}>
                     <TableCell>
                       {listing.Company?.logo ? (
@@ -114,7 +128,7 @@ export default async function MyJobsPage() {
                       {listing.status.charAt(0).toUpperCase() +
                         listing.status.slice(1).toLowerCase()}
                     </TableCell>
-                    <TableCell>5</TableCell>
+                    <TableCell>5</TableCell> {/* Ganti dengan data sebenarnya */}
                     <TableCell>
                       {listing.createdAt.toLocaleDateString("en-US", {
                         month: "long",
