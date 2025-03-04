@@ -8,6 +8,19 @@ interface BenefitsSelectorProps {
   field: any;
 }
 
+
+/**
+ * BenefitsSelector is a component that renders a list of benefits that can be toggled on or off.
+ *
+ * It expects a `field` prop which is an object with a `value` property that is an array of strings
+ * representing the IDs of the selected benefits. The component will update this value when the user
+ * toggles a benefit on or off.
+ *
+ * The component renders a list of badges, one for each benefit. The badge is rendered with the
+ * "default" variant if the benefit is selected, and with the "outline" variant if it is not.
+ *
+ * The component also renders a text that displays the number of selected benefits.
+ */
 export function BenefitsSelector({ field }: BenefitsSelectorProps) {
   function toggleBenefit(benefitId: string) {
     const currentBenefits = field.value || [];

@@ -20,6 +20,20 @@ import { useCallback } from "react";
 
 const jobTypes = ["Full-Time", "Part-Time", "Contract", "Internship"];
 
+/**
+ * Komponen filter untuk halaman utama yang menampilkan daftar lowongan pekerjaan sesuai filter.
+ *
+ * Komponen ini menerima parameter `searchParams` yang berisi parameter query string
+ * berupa `page`, `jobTypes`, dan `location`. Parameter `page` berisi nomor halaman
+ * yang akan ditampilkan, parameter `jobTypes` berisi jenis pekerjaan yang akan
+ * ditampilkan, dan parameter `location` berisi lokasi pekerjaan yang akan ditampilkan.
+ *
+ * Komponen ini akan menampilkan daftar lowongan pekerjaan sesuai filter yang diberikan
+ * dan akan membuat unique key untuk komponen berdasarkan filter yang diberikan.
+ * 
+ * @returns {JSX.Element}
+ */
+
 export function JobFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,6 +42,10 @@ export function JobFilters() {
   const currentJobTypes = searchParams.get("jobTypes")?.split(",") || [];
   const currentLocation = searchParams.get("location") || "";
 
+  
+  /**
+   * Clears all filters by pushing the user to the home page.
+   */
   function clearAllFilters() {
     router.push("/");
   }
@@ -47,6 +65,13 @@ export function JobFilters() {
     [searchParams]
   );
 
+  /**
+   * Handles the change of a job type filter.
+   *
+   * @param {string} type The type of job to filter by.
+   * @param {boolean} checked Whether the job type is selected or not.
+   */
+
   const handleJobTypeChange = (type: string, checked: boolean) => {
     const current = new Set(currentJobTypes);
     if (checked) {
@@ -59,6 +84,12 @@ export function JobFilters() {
     router.push(`?${createQueryString("jobTypes", newValue)}`);
   };
 
+  
+  /**
+   * Handles the change of the location filter.
+   *
+   * @param {string} location The location to filter by.
+   */
   function handleLocationChange(location: string) {
     router.push(`?${createQueryString("location", location)}`);
   }

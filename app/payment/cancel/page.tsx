@@ -4,6 +4,13 @@ import { Card } from "@/components/ui/card";
 import { CheckCheckIcon } from "lucide-react";
 import Link from "next/link";
 
+
+/**
+ * Halaman ini akan di render ketika user membatalkan proses pembayaran
+ * dan akan di redirect ke halaman ini
+ *
+ * @returns {JSX.Element}
+ */
 export default async function PaymentCancel() {
   await requireUser();
   return (
