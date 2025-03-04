@@ -1,5 +1,7 @@
 "use client";
-import { useForm } from "react-hook-form";
+
+import { countryList } from "@/app/utils/countriesList";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Form,
   FormControl,
@@ -8,10 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { jobSchema } from "@/app/utils/zodSchemas";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -22,53 +20,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { countryList } from "@/app/utils/countriesList";
-import { SalaryRangeSelector } from "../general/SalaryRangeSelector";
-import { JobDescriptionEditor } from "../richTextEditor/JobDescriptionEditor";
-import { BenefitsSelector } from "../general/BenefitsSelector";
 import { Textarea } from "../ui/textarea";
-import Image from "next/image";
-import { Button } from "../ui/button";
 import { XIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import Image from "next/image";
+import { toast } from "sonner";
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { jobSchema } from "@/app/utils/zodSchemas";
+import { SalaryRangeSelector } from "../general/SalaryRangeSelector";
+import { BenefitsSelector } from "../general/BenefitsSelector";
+import { createJob } from "@/app/action";
+import JobDescriptionEditor from "../richTextEditor/JobDescriptionEditor";
 import { UploadDropzone } from "../general/UploadThing";
 import { JobListingDuration } from "../general/JobListingDuration";
-import { createJob } from "@/app/action";
-import { useState } from "react";
 
 interface CreateJobFormProps {
-  companyAbout: string;
-  companyLocation: string;
   companyName: string;
+  companyLocation: string;
+  companyAbout: string;
   companyLogo: string;
-  companyWebsite: string;
   companyXAccount: string | null;
+  companyWebsite: string;
 }
 
 export function CreateJobForm({
   companyAbout,
   companyLocation,
-  companyName,
   companyLogo,
-  companyWebsite,
   companyXAccount,
+  companyName,
+  companyWebsite,
 }: CreateJobFormProps) {
   const form = useForm<z.infer<typeof jobSchema>>({
     resolver: zodResolver(jobSchema),
     defaultValues: {
       benefits: [],
-      companyAbout: companyAbout,
+      companyDescription: companyAbout,
       companyLocation: companyLocation,
       companyName: companyName,
-      companyLogo: companyLogo,
       companyWebsite: companyWebsite,
       companyXAccount: companyXAccount || "",
       employementType: "",
       jobDescription: "",
       jobTitle: "",
-      listingDuration: 0, // nanti ganti jadi number
       location: "",
-      salaryFrom: 0, // nanti ganti jadi number
-      salaryTo: 0, // nanti ganti jadi number
+      salaryFrom: 0,
+      salaryTo: 0,
+      companyLogo: companyLogo,
+      listingDuration: 30,
     },
   });
 
@@ -76,28 +78,26 @@ export function CreateJobForm({
   async function onSubmit(values: z.infer<typeof jobSchema>) {
     try {
       setPending(true);
+
       await createJob(values);
-    } catch (error) {
-      if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
-        console.error("Something went wrong:", error.message);
-      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setPending(false);
     }
   }
-
   return (
     <Form {...form}>
       <form
-        className="col-span-2 lg:col-span-2 flex flex-col gap-4"
         onSubmit={form.handleSubmit(onSubmit)}
+        className="col-span-1   lg:col-span-2  flex flex-col gap-8"
       >
         <Card>
           <CardHeader>
-            <CardTitle>Job Details</CardTitle>
+            <CardTitle>Job Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="jobTitle"
@@ -123,45 +123,46 @@ export function CreateJobForm({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a job type" />
+                          <SelectValue placeholder="Select Employment Type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Employement Type</SelectLabel>
-                          <SelectItem value="Full-Time">Full Time</SelectItem>
-                          <SelectItem value="Part-Time">Part Time</SelectItem>
-                          <SelectItem value="Contract">Contract</SelectItem>
-                          <SelectItem value="Internship">Internship</SelectItem>
+                          <SelectLabel>Employment Type</SelectLabel>
+                          <SelectItem value="full-time">Full Time</SelectItem>
+                          <SelectItem value="part-time">Part Time</SelectItem>
+                          <SelectItem value="contract">Contract</SelectItem>
+                          <SelectItem value="internship">Internship</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Job Location</FormLabel>
+                    <FormLabel>Location</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a job location" />
+                          <SelectValue placeholder="Select Location" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Worldwide</SelectLabel>
-                          <SelectItem value="Worldwide">
+                          <SelectItem value="worldwide">
                             <span>🌍</span>
                             <span className="pl-2">Worldwide / Remote</span>
                           </SelectItem>
@@ -169,7 +170,7 @@ export function CreateJobForm({
                         <SelectGroup>
                           <SelectLabel>Location</SelectLabel>
                           {countryList.map((country) => (
-                            <SelectItem key={country.code} value={country.name}>
+                            <SelectItem value={country.name} key={country.code}>
                               <span>{country.flagEmoji}</span>
                               <span className="pl-2">{country.name}</span>
                             </SelectItem>
@@ -177,10 +178,12 @@ export function CreateJobForm({
                         </SelectGroup>
                       </SelectContent>
                     </Select>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormItem>
                 <FormLabel>Salary Range</FormLabel>
                 <FormControl>
@@ -191,8 +194,13 @@ export function CreateJobForm({
                     step={100000}
                   />
                 </FormControl>
+                <FormMessage>
+                  {form.formState.errors.salaryFrom?.message ||
+                    form.formState.errors.salaryTo?.message}
+                </FormMessage>
               </FormItem>
             </div>
+
             <FormField
               control={form.control}
               name="jobDescription"
@@ -200,12 +208,13 @@ export function CreateJobForm({
                 <FormItem>
                   <FormLabel>Job Description</FormLabel>
                   <FormControl>
-                    <JobDescriptionEditor field={field as any} />
+                    <JobDescriptionEditor field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="benefits"
@@ -213,7 +222,7 @@ export function CreateJobForm({
                 <FormItem>
                   <FormLabel>Benefits</FormLabel>
                   <FormControl>
-                    <BenefitsSelector field={field as any} />
+                    <BenefitsSelector field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -221,12 +230,13 @@ export function CreateJobForm({
             />
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>Company Details</CardTitle>
+            <CardTitle>Company Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="companyName"
@@ -246,28 +256,28 @@ export function CreateJobForm({
                 name="companyLocation"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Location</FormLabel>
+                    <FormLabel>Location</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a job location" />
+                          <SelectValue placeholder="Select Location" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Worldwide</SelectLabel>
-                          <SelectItem value="Worldwide">
+                          <SelectItem value="worldwide">
                             <span>🌍</span>
-                            <span className="pl-2">Worldwide / Remote</span>
+                            <span className="pl-2">Worldwide</span>
                           </SelectItem>
                         </SelectGroup>
                         <SelectGroup>
                           <SelectLabel>Location</SelectLabel>
                           {countryList.map((country) => (
-                            <SelectItem key={country.code} value={country.name}>
+                            <SelectItem value={country.name} key={country.name}>
                               <span>{country.flagEmoji}</span>
                               <span className="pl-2">{country.name}</span>
                             </SelectItem>
@@ -275,12 +285,13 @@ export function CreateJobForm({
                         </SelectGroup>
                       </SelectContent>
                     </Select>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="companyWebsite"
@@ -288,8 +299,18 @@ export function CreateJobForm({
                   <FormItem>
                     <FormLabel>Company Website</FormLabel>
                     <FormControl>
-                      <Input placeholder="Company Website" {...field} />
+                      <div className="flex ">
+                        <span className="flex items-center justify-center px-3 border border-r-0 border-input rounded-l-md bg-muted text-muted-foreground text-sm">
+                          https://
+                        </span>
+                        <Input
+                          {...field}
+                          placeholder="Company Website"
+                          className="rounded-l-none"
+                        />
+                      </div>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -320,7 +341,7 @@ export function CreateJobForm({
 
             <FormField
               control={form.control}
-              name="companyAbout"
+              name="companyDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Company Description</FormLabel>
@@ -367,9 +388,14 @@ export function CreateJobForm({
                         <UploadDropzone
                           endpoint="imageUploader"
                           onClientUploadComplete={(res) => {
-                            field.onChange(res[0].ufsUrl);
+                            field.onChange(res[0].url);
+                            toast.success("Logo uploaded successfully!");
                           }}
-                          onUploadError={() => {}}
+                          onUploadError={() => {
+                            toast.error(
+                              "Something went wrong. Please try again."
+                            );
+                          }}
                         />
                       )}
                     </div>
@@ -392,7 +418,7 @@ export function CreateJobForm({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <JobListingDuration field={field as any} />
+                    <JobListingDuration field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -400,8 +426,8 @@ export function CreateJobForm({
             />
           </CardContent>
         </Card>
-        <Button className="w-full" type="submit" disabled={pending}>
-          {pending ? "Creating..." : "Create Job Post"}
+        <Button type="submit" className="w-full" disabled={pending}>
+          {pending ? "Submitting..." : "Continue"}
         </Button>
       </form>
     </Form>

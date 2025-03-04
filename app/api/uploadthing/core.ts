@@ -1,34 +1,28 @@
-import { requireUser } from "@/app/utils/requireUser";
+import { auth } from "@/app/utils/auth";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
-
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({
     image: {
-      /**
-       * For full list of options and defaults, see the File Route API reference
-       * @see https://docs.uploadthing.com/file-routes#route-config
-       */
-      maxFileSize: "2MB",
+      maxFileSize: "4MB",
       maxFileCount: 1,
     },
   })
-    // pada bagian ini harus diconfigurasi sesuai kebutuhan
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
-      const session = await requireUser();
+      // This code runs on your server before upload
+      const session = await auth();
 
       // If you throw, the user will not be able to upload
-      if (!session?.id) throw new UploadThingError("Unauthorized");
+      if (!session?.user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: session.id };
+      return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
@@ -42,24 +36,20 @@ export const ourFileRouter = {
 
   resumeUploader: f({
     "application/pdf": {
-      /**
-       * For full list of options and defaults, see the File Route API reference
-       * @see https://docs.uploadthing.com/file-routes#route-config
-       */
       maxFileSize: "2MB",
       maxFileCount: 1,
     },
   })
-    // pada bagian ini harus diconfigurasi sesuai kebutuhan
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
-      const session = await requireUser();
+      // This code runs on your server before upload
+      const session = await auth();
 
       // If you throw, the user will not be able to upload
-      if (!session?.id) throw new UploadThingError("Unauthorized");
+      if (!session?.user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: session.id };
+      return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload

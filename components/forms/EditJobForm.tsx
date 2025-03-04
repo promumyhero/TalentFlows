@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { BenefitsSelector } from "../general/BenefitsSelector";
 import { SalaryRangeSelector } from "../general/SalaryRangeSelector";
-import { JobDescriptionEditor } from "../richTextEditor/JobDescriptionEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Form,
@@ -33,6 +32,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { editJobPost } from "@/app/action";
+import JobDescriptionEditor from "../richTextEditor/JobDescriptionEditor";
 
 interface EditJobFormProps {
   editJob: {
@@ -205,7 +205,7 @@ export function EditJobForm({ editJob }: EditJobFormProps) {
                 <FormItem>
                   <FormLabel>Job Description</FormLabel>
                   <FormControl>
-                    <JobDescriptionEditor field={field as any} />
+                    <JobDescriptionEditor field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -218,7 +218,7 @@ export function EditJobForm({ editJob }: EditJobFormProps) {
                 <FormItem>
                   <FormLabel>Benefits</FormLabel>
                   <FormControl>
-                    <BenefitsSelector field={field as any} />
+                    <BenefitsSelector field={field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

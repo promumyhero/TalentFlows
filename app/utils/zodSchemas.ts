@@ -48,6 +48,7 @@ export const jobSchema = z.object({
   companyLocation: z.string().min(1, { message: "Company location required." }),
   companyAbout: z.string().min(1, { message: "Company description required." }),
   companyLogo: z.string().min(1, { message: "Company logo required." }),
+  companyDescription: z.string().min(1, "Company description is required"),
   companyWebsite: z.string().min(1, { message: "Company website required." }),
   companyXAccount: z.string().optional(),
 });
