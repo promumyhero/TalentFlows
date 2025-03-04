@@ -6,9 +6,10 @@ import { Label } from "../ui/label";
 import { Card } from "../ui/card";
 import { cn } from "@/lib/utils";
 import { FormControl } from "../ui/form";
+import { ControllerRenderProps } from "react-hook-form";
 
 interface JobListingDurationProps {
-  field: any;
+  field: ControllerRenderProps<any, "listingDuration">;
 }
 
 export function JobListingDuration({ field }: JobListingDurationProps) {
